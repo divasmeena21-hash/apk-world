@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>APK World - Android Apps</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            text-align: center;
+            padding: 25px 15px;
+        }
+
+        header h1 {
+            font-size: 32px;
+        }
+
+        header p {
+            margin-top: 8px;
+            color: #cbd5e1;
+        }
+
+        .search {
+            max-width: 700px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+
+        .search input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        main {
+            max-width: 900px;
+            margin: auto;
+            padding: 10px 15px 40px;
+        }
+
+        .heading {
+            margin: 15px 0;
+        }
+
+        .app-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .app-icon {
+            width: 80px;
+            height: 80px;
+            background: #111827;
+            color: white;
+            border-radius: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 38px;
+            font-weight: bold;
+        }
+
+        .app-info {
+            flex: 1;
+        }
+
+        .app-info h2 {
+            margin-bottom: 8px;
+        }
+
+        .app-info p {
+            color: #666;
+            margin-bottom: 7px;
+        }
+
+        .version {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .download-btn {
+            background: #16a34a;
+            color: white;
+            text-decoration: none;
+            padding: 13px 20px;
+            border-radius: 9px;
+            font-weight: bold;
+        }
+
+        .download-btn:hover {
+            background: #15803d;
+        }
+
+        footer {
+            background: #111827;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 600px) {
+            .app-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .download-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>APK WORLD</h1>
+        <p>Android Apps & Downloads</p>
+    </header>
+
+    <div class="search">
+        <input
+            type="text"
+            id="search"
+            placeholder="Search apps..."
+            onkeyup="searchApps()">
+    </div>
+
+    <main>
+
+        <h2 class="heading">Popular Apps</h2>
+
+        <div class="app-card" id="capcut">
+
+            <div class="app-icon">
+                C
+            </div>
+
+            <div class="app-info">
+                <h2>CapCut</h2>
+                <p>Video Editor for Android</p>
+                <div class="version">
+                    Official Download
+                </div>
+            </div>
+
+            <a
+                class="download-btn"
+                href="https://www.capcut.com/resource/capcut-apk-download"
+                target="_blank"
+                rel="noopener noreferrer">
+                Download
+            </a>
+
+        </div>
+
+    </main>
+
+    <footer>
+        © 2026 APK World
+    </footer>
+
+    <script>
+
+        function searchApps() {
+
+            let search =
+                document.getElementById("search").value.toLowerCase();
+
+            let capcut =
+                document.getElementById("capcut");
+
+            if ("capcut".includes(search)) {
+                capcut.style.display = "flex";
+            } else {
+                capcut.style.display = "none";
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
