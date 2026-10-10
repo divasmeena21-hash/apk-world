@@ -237,7 +237,7 @@
             </div>
 
             <p id="continue-message">
-                कृपया 3 सेकंड इंतज़ार करें...
+                कृपया 10 सेकंड इंतज़ार करें...
             </p>
 
             <button
@@ -294,21 +294,22 @@
 
             clearInterval(countdownTimer);
 
-            frame.src =
-                "https://www.youtube-nocookie.com/embed/" +
-                encodeURIComponent(videoID);
+frame.src =
+    "https://www.youtube-nocookie.com/embed/" +
+    encodeURIComponent(videoID) +
+    "?autoplay=1&mute=1&playsinline=1";
 
             section.style.display = "block";
             continueBtn.disabled = true;
             continueBtn.textContent = "Continue Download";
-            message.textContent = "कृपया 3 सेकंड इंतज़ार करें...";
+            message.textContent = "कृपया 10 सेकंड इंतज़ार करें...";
 
             section.scrollIntoView({
                 behavior: "smooth",
                 block: "start"
             });
 
-            let seconds = 3;
+            let seconds = 10;
 
             countdownTimer = setInterval(function () {
                 seconds--;
