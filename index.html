@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -72,14 +73,15 @@
         .app-icon {
             width: 80px;
             height: 80px;
-            background: #111827;
-            color: white;
+            flex-shrink: 0;
             border-radius: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 38px;
-            font-weight: bold;
+            overflow: hidden;
+        }
+
+        .app-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .app-info {
@@ -100,17 +102,64 @@
             font-size: 14px;
         }
 
-        .download-btn {
+        .download-btn,
+        .continue-btn {
             background: #16a34a;
             color: white;
             text-decoration: none;
             padding: 13px 20px;
+            border: none;
             border-radius: 9px;
             font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            display: inline-block;
+            text-align: center;
         }
 
-        .download-btn:hover {
+        .download-btn:hover,
+        .continue-btn:hover {
             background: #15803d;
+        }
+
+        #video-section {
+            display: none;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        #video-section h2 {
+            margin-bottom: 15px;
+        }
+
+        .video-frame {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            margin-bottom: 15px;
+        }
+
+        .video-frame iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            border-radius: 10px;
+        }
+
+        #continue-message {
+            margin: 12px 0;
+            color: #555;
+        }
+
+        .continue-btn:disabled {
+            background: #999;
+            cursor: not-allowed;
         }
 
         footer {
@@ -127,9 +176,9 @@
                 text-align: center;
             }
 
-            .download-btn {
+            .download-btn,
+            .continue-btn {
                 width: 100%;
-                text-align: center;
             }
         }
     </style>
@@ -147,11 +196,10 @@
             type="text"
             id="search"
             placeholder="Search apps..."
-            onkeyup="searchApps()">
+            oninput="searchApps()">
     </div>
 
     <main>
-
         <h2 class="heading">Popular Apps</h2>
 
         <div class="app-card" id="capcut">
@@ -163,15 +211,43 @@
             <div class="app-info">
                 <h2>CapCut</h2>
                 <p>Video Editor for Android</p>
-                <div class="version">
-                    Official Download
-                </div>
-            </div><div class="download-btn-container" style="margin-top: 15px;">
-            <a href="#" style="background-color: #2ecc71; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Download CapCut</a>
-        </div>
+                <div class="version">Official Download</div>
+            </div>
+
+            <button
+                class="download-btn"
+                onclick="showVideo()">
+                Download
+            </button>
 
         </div>
 
+        <section id="video-section">
+            <h2>Watch Our YouTube Video</h2>
+
+            <div class="video-frame">
+                <iframe
+                    id="youtube-frame"
+                    title="YouTube video"
+                    src=""
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            <p id="continue-message">
+                कृपया 3 सेकंड इंतज़ार करें...
+            </p>
+
+            <button
+                id="continue-btn"
+                class="continue-btn"
+                onclick="continueDownload()"
+                disabled>
+                Continue Download
+            </button>
+        </section>
     </main>
 
     <footer>
@@ -179,24 +255,118 @@
     </footer>
 
     <script>
+        // रोज़ सिर्फ इस लाइन में अपना YouTube वीडियो लिंक बदलें
+        const youtubeVideoURL = "https://www.youtube.com/watch?v=YOUR_VIDEO_ID";
+
+        // CapCut का आधिकारिक डाउनलोड पेज
+        const downloadURL = "https://www.capcut.com/resource/capcut-apk-download";
+
+        let countdownTimer = null;
 
         function searchApps() {
+            const search = document
+                .getElementById("search")
+                .value.toLowerCase();
 
-            let search =
-                document.getElementById("search").value.toLowerCase();
+            const capcut = document.getElementById("capcut");
 
-            let capcut =
-                document.getElementById("capcut");
-
-            if ("capcut".includes(search)) {
-                capcut.style.display = "flex";
-            } else {
-                capcut.style.display = "none";
-            }
-
+            capcut.style.display =
+                "capcut".includes(search) ? "flex" : "none";
         }
 
+        function showVideo() {
+            const section = document.getElementById("video-section");
+            const frame = document.getElementById("youtube-frame");
+            const continueBtn = document.getElementById("continue-btn");
+            const message = document.getElementById("continue-message");
+
+            if (youtubeVideoURL.includes("YOUR_VIDEO_ID")) {
+                alert("पहले कोड में अपना असली YouTube वीडियो लिंक डालें।");
+                return;
+            }
+
+            const videoID = getYouTubeVideoID(youtubeVideoURL);
+
+            if (!videoID) {
+                alert("YouTube वीडियो का लिंक सही नहीं है।");
+                return;
+            }
+
+            clearInterval(countdownTimer);
+
+            frame.src =
+                "https://www.youtube-nocookie.com/embed/" +
+                encodeURIComponent(videoID);
+
+            section.style.display = "block";
+            continueBtn.disabled = true;
+            continueBtn.textContent = "Continue Download";
+            message.textContent = "कृपया 3 सेकंड इंतज़ार करें...";
+
+            section.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+            let seconds = 3;
+
+            countdownTimer = setInterval(function () {
+                seconds--;
+
+                if (seconds <= 0) {
+                    clearInterval(countdownTimer);
+                    message.textContent =
+                        "अब आप आगे बढ़ सकते हैं।";
+                    continueBtn.disabled = false;
+                } else {
+                    message.textContent =
+                        "कृपया " + seconds + " सेकंड इंतज़ार करें...";
+                }
+            }, 1000);
+        }
+
+        function getYouTubeVideoID(url) {
+            try {
+                const parsedURL = new URL(url);
+                const host = parsedURL.hostname.replace(/^www\./, "");
+
+                if (host === "youtu.be") {
+                    return parsedURL.pathname.slice(1).split("/")[0];
+                }
+
+                if (
+                    host === "youtube.com" ||
+                    host === "m.youtube.com" ||
+                    host === "youtube-nocookie.com"
+                ) {
+                    if (parsedURL.pathname === "/watch") {
+                        return parsedURL.searchParams.get("v");
+                    }
+
+                    const parts = parsedURL.pathname.split("/");
+
+                    if (
+                        ["embed", "shorts", "live"].includes(parts[1])
+                    ) {
+                        return parts[2] || null;
+                    }
+                }
+            } catch (error) {
+                return null;
+            }
+
+            return null;
+        }
+
+        function continueDownload() {
+            window.open(
+                downloadURL,
+                "_blank",
+                "noopener,noreferrer"
+            );
+        }
     </script>
 
 </body>
 </html>
+```
