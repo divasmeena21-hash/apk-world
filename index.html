@@ -376,7 +376,39 @@ frame.src =
   <input id="admin-password" type="password" placeholder="Password" style="width:100%;padding:12px;margin:8px 0;">
   <button onclick="adminLogin()" style="width:100%;padding:12px;background:#16a34a;color:white;border:0;border-radius:8px;">Login</button>
   <p id="admin-message" style="margin-top:12px;"></p>
-</div>
+</div> 
+ 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://anxernnpyeslflnajfuc.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_1YkzjNqX3k-fOaLG6HvkJQ_BysSJg4l";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+async function adminLogin() {
+  const email = document.getElementById("admin-email").value.trim();
+  const password = document.getElementById("admin-password").value;
+  const msg = document.getElementById("admin-message");
+
+  msg.textContent = "Login ho raha hai...";
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+
+  if (error) {
+    msg.textContent = "Login nahi hua. Email aur password check karo.";
+    return;
+  }
+
+  msg.textContent = "Login successful!";
+}
+</script>
+   
 </body>
 </html>
 ```
