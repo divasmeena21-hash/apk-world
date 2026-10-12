@@ -406,6 +406,56 @@ async function adminLogin() {
   }
 
   msg.textContent = "Login successful!";
+ document.getElementById("admin-panel").style.display = "block";   
+}
+</script>
+
+<div id="admin-panel" style="display:none; max-width:600px; margin:30px auto; padding:20px; background:#fff; border:1px solid #ddd; border-radius:12px;">
+  <h2>APK World Admin Panel</h2>
+  <p>App ki information yahan se save karo</p>
+
+  <label>App Name</label>
+  <input id="app-name" placeholder="CapCut" style="display:block;width:100%;padding:10px;margin:8px 0 15px;box-sizing:border-box;">
+
+  <label>Version</label>
+  <input id="app-version" placeholder="1.0.0" style="display:block;width:100%;padding:10px;margin:8px 0 15px;box-sizing:border-box;">
+
+  <label>Description</label>
+  <input id="app-description" placeholder="Video Editor App" style="display:block;width:100%;padding:10px;margin:8px 0 15px;box-sizing:border-box;">
+
+  <label>Download URL</label>
+  <input id="app-download" placeholder="Download link" style="display:block;width:100%;padding:10px;margin:8px 0 15px;box-sizing:border-box;">
+
+  <label>Image URL</label>
+  <input id="app-image" placeholder="Image link" style="display:block;width:100%;padding:10px;margin:8px 0 15px;box-sizing:border-box;">
+
+  <button onclick="saveApp()" style="padding:12px 20px;background:#166534;color:white;border:0;border-radius:6px;cursor:pointer;">Save App</button>
+  <p id="app-save-message"></p>
+</div>
+
+<script>
+async function saveApp() {
+  const msg = document.getElementById("app-save-message");
+  msg.textContent = "Saving...";
+
+  const row = {
+    name: document.getElementById("app-name").value.trim(),
+    version: document.getElementById("app-version").value.trim(),
+    description: document.getElementById("app-description").value.trim(),
+    download_url: document.getElementById("app-download").value.trim(),
+    image_url: document.getElementById("app-image").value.trim()
+  };
+
+  if (!row.name) {
+    msg.textContent = "App name required";
+    return;
+  }
+
+  const { error } = await supabaseClient.from("apps").insert(row);
+
+  msg.textContent = error
+    ? "Error: " + error.message
+    : "App saved successfully!";
 }
 </script>
    
