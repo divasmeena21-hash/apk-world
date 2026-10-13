@@ -267,13 +267,26 @@
 
         function searchApps() {
             const search = document
-                .getElementById("search")
-                .value.toLowerCase();
+    .getElementById("search")
+    .value.toLowerCase()
+    .trim();
 
-            const capcut = document.getElementById("capcut");
+const capcut = document.getElementById("capcut");
 
-            capcut.style.display =
-                "capcut".includes(search) ? "flex" : "none";
+capcut.style.display =
+    "capcut".includes(search) ? "flex" : "none";
+
+const appCards = document.querySelectorAll("#database-apps .app-card");
+
+appCards.forEach(function (card) {
+    const appName = card.querySelector("h2")?.textContent.toLowerCase() || "";
+    const appDescription = card.querySelector(".app-info p")?.textContent.toLowerCase() || "";
+
+    card.style.display =
+        appName.includes(search) || appDescription.includes(search)
+            ? "flex"
+            : "none";
+});
         }
 
         function showVideo() {
