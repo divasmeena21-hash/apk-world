@@ -429,36 +429,85 @@ async function adminLogin() {
   <input id="app-download" placeholder="Download link" style="display:block;width:100%;padding:10px;margin:8px 0 15px;box-sizing:border-box;">
 
   <label>Image URL</label>
-  <input id="app-image" placeholder="Image link" style="display:block;width:100%;padding:10px;margin:8px 0 15px;box-sizing:border-box;">
+    
+<input type="file" id="app-image" accept="image/*" style="display:block;width:100%;padding:10px;margin:8px 0 15px;box-sizing:border-box;">
+
 
   <button onclick="saveApp()" style="padding:12px 20px;background:#166534;color:white;border:0;border-radius:6px;cursor:pointer;">Save App</button>
   <p id="app-save-message"></p>
 </div>
 
 <script>
+
 async function saveApp() {
   const msg = document.getElementById("app-save-message");
-  msg.textContent = "Saving...";
+  msg.textContent = "सेव हो रहा है...";
 
   const row = {
     name: document.getElementById("app-name").value.trim(),
     version: document.getElementById("app-version").value.trim(),
     description: document.getElementById("app-description").value.trim(),
     download_url: document.getElementById("app-download").value.trim(),
-    image_url: document.getElementById("app-image").value.trim()
+    image_url: ""
   };
 
   if (!row.name) {
-    msg.textContent = "App name required";
+    msg.textContent = "पहले ऐप का नाम लिखें।";
     return;
   }
 
-  const { error } = await supabaseClient.from("apps").insert(row);
+  const imageFile = document.getElementById("app-image").files[0];
 
-  msg.textContent = error
-    ? "Error: " + error.message
-    : "App saved successfully!";
+  if (imageFile) {
+    if (!imageFile.type.startsWith("image/")) {
+      msg.textContent = "कृपया सही इमेज फ़ाइल चुनें।";
+      return;
+    }
+
+    if (imageFile.size > 5 * 1024 * 1024) {
+      msg.textContent = "इमेज 5 MB से छोटी होनी चाहिए।";
+      return;
+    }
+
+    const safeName = imageFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const filePath = Date.now() + "_" + safeName;
+
+    const { data: uploadData, error: uploadError } =
+      await supabaseClient.storage
+        .from("app-images")
+        .upload(filePath, imageFile);
+
+    if (uploadError) {
+      msg.textContent = "इमेज अपलोड नहीं हुई: " + uploadError.message;
+      return;
+    }
+
+    const { data: publicData } = supabaseClient.storage
+      .from("app-images")
+      .getPublicUrl(uploadData.path);
+
+    row.image_url = publicData.publicUrl;
+  }
+
+  const { error } = await supabaseClient
+    .from("apps")
+    .insert(row);
+
+  if (error) {
+    msg.textContent = "ऐप सेव नहीं हुआ: " + error.message;
+    return;
+  }
+
+  msg.textContent = "ऐप सफलतापूर्वक सेव हो गया!";
+  document.getElementById("app-name").value = "";
+  document.getElementById("app-version").value = "";
+  document.getElementById("app-description").value = "";
+  document.getElementById("app-download").value = "";
+  document.getElementById("app-image").value = "";
+
+  await loadApps();
 }
+
 </script>
 <script>
 async function loadApps() {
