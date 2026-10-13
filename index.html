@@ -460,7 +460,56 @@ async function saveApp() {
     : "App saved successfully!";
 }
 </script>
-   
+<script>
+async function loadApps() {
+  const container = document.getElementById("database-apps");
+  container.textContent = "Apps load ho rahe hain...";
+
+  const { data, error } = await supabaseClient
+    .from("apps")
+    .select("id, name, version, description, download_url, image_url")
+    .order("id", { ascending: true });
+
+  if (error) {
+    container.textContent = "Apps load nahi hue.";
+    return;
+  }
+
+  container.replaceChildren();
+
+  data.forEach(app => {
+    const card = document.createElement("div");
+    card.className = "app-card";
+
+    const info = document.createElement("div");
+    info.className = "app-info";
+
+    const name = document.createElement("h2");
+    name.textContent = app.name || "";
+
+    const description = document.createElement("p");
+    description.textContent = app.description || "";
+
+    const version = document.createElement("p");
+    version.className = "version";
+    version.textContent = "Version: " + (app.version || "N/A");
+
+    info.append(name, description, version);
+
+    const link = document.createElement("a");
+    link.className = "download-btn";
+    link.textContent = "Download";
+    link.href = app.download_url || "#";
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+
+    card.append(info, link);
+    container.append(card);
+  });
+}
+
+window.addEventListener("load", loadApps);
+</script>   
 </body>
 </html>
 ```
