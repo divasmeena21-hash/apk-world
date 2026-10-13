@@ -438,9 +438,14 @@ async function adminLogin() {
 </div>
 
 <script>
-
+let editingAppId = null;
 async function saveApp() {
   const msg = document.getElementById("app-save-message");
+    const currentAppImage = editingAppId !== null
+  ? document.querySelector(
+      '#database-apps .app-card[data-app-id="' + editingAppId + '"] img'
+    )?.src || ""
+  : "";
   msg.textContent = "सेव हो रहा है...";
 
   const row = {
@@ -448,7 +453,7 @@ async function saveApp() {
     version: document.getElementById("app-version").value.trim(),
     description: document.getElementById("app-description").value.trim(),
     download_url: document.getElementById("app-download").value.trim(),
-    image_url: ""
+    image_url: currentAppImage || ""
   };
 
   if (!row.name) {
@@ -489,9 +494,20 @@ async function saveApp() {
     row.image_url = publicData.publicUrl;
   }
 
-  const { error } = await supabaseClient
+  let result;
+
+if (editingAppId !== null) {
+  result = await supabaseClient
+    .from("apps")
+    .update(row)
+    .eq("id", editingAppId);
+} else {
+  result = await supabaseClient
     .from("apps")
     .insert(row);
+}
+
+const { error } = result;
 
   if (error) {
     msg.textContent = "ऐप सेव नहीं हुआ: " + error.message;
@@ -499,6 +515,7 @@ async function saveApp() {
   }
 
   msg.textContent = "ऐप सफलतापूर्वक सेव हो गया!";
+editingAppId = null;
   document.getElementById("app-name").value = "";
   document.getElementById("app-version").value = "";
   document.getElementById("app-description").value = "";
@@ -529,6 +546,7 @@ async function loadApps() {
   data.forEach(app => {
     const card = document.createElement("div");
     card.className = "app-card";
+      card.dataset.appId = app.id;
 
     const info = document.createElement("div");
     info.className = "app-info";
@@ -561,8 +579,48 @@ iconBox.appendChild(appImage);
     link.href = app.download_url || "#";
     link.target = "_blank";
     link.rel = "noopener noreferrer";
+const editBtn = document.createElement("button");
+editBtn.textContent = "Edit";
+editBtn.onclick = function () {
+    editingAppId = app.id;
+  document.getElementById("app-name").value = app.name || "";
+  document.getElementById("app-version").value = app.version || "";
+  document.getElementById("app-description").value = app.description || "";
+  document.getElementById("app-download").value = app.download_url || "";
 
-    card.append(iconBox, info, link);
+  document.getElementById("admin-panel").style.display = "block";
+  document.getElementById("admin-panel").scrollIntoView({
+    behavior: "smooth"
+  });
+
+  document.getElementById("app-save-message").textContent =
+  "जानकारी बदलकर Save App दबाएँ।";
+};      
+editBtn.className = "download-btn";
+editBtn.style.marginRight = "8px";
+
+const deleteBtn = document.createElement("button");
+deleteBtn.textContent = "Delete";
+deleteBtn.className = "download-btn";
+deleteBtn.style.background = "#dc2626";
+
+deleteBtn.onclick = async function () {
+  if (!confirm("क्या इस ऐप को हटाना चाहते हो?")) return;
+
+  const { error } = await supabaseClient
+    .from("apps")
+    .delete()
+    .eq("id", app.id);
+
+  if (error) {
+    alert("ऐप डिलीट नहीं हुआ: " + error.message);
+    return;
+  }
+
+  loadApps();
+};
+
+card.append(iconBox, info, link, editBtn, deleteBtn);
     container.append(card);
   });
 }
