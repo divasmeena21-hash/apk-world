@@ -485,6 +485,16 @@ async function loadApps() {
     info.className = "app-info";
 
     const name = document.createElement("h2");
+      const appImage = document.createElement("img");
+appImage.src = app.image_url || "capcut.png";
+appImage.alt = app.name || "App icon";
+appImage.style.width = "80px";
+appImage.style.height = "80px";
+appImage.style.objectFit = "contain";
+
+const iconBox = document.createElement("div");
+iconBox.className = "app-icon";
+iconBox.appendChild(appImage);
     name.textContent = app.name || "";
 
     const description = document.createElement("p");
@@ -503,7 +513,7 @@ async function loadApps() {
     link.target = "_blank";
     link.rel = "noopener noreferrer";
 
-    card.append(info, link);
+    card.append(iconBox, info, link);
     container.append(card);
   });
 }
