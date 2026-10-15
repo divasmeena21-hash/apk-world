@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://divasmeena21-hash.github.io/apk-world/sitemap.xml
