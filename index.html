@@ -633,7 +633,16 @@ deleteBtn.onclick = async function () {
   loadApps();
 };
 
-card.append(iconBox, info, link, editBtn, deleteBtn);
+card.append(iconBox, info, link);
+
+supabaseClient.auth.getSession().then(({ data }) => {
+  if (
+  data.session &&
+  data.session.user.email === "divasmeena21@gmail.com"
+) {
+    card.append(editBtn, deleteBtn);
+  }
+});
     container.append(card);
   });
 }
